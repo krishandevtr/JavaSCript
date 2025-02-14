@@ -2,11 +2,12 @@ import { Container, Stack, Text } from "@chakra-ui/react";
 import Navbar from "./components/Navbar";
 import UserBox from "./components/UserBox";
 import { useState } from "react";
-
+export const BASE_URL = "http://localhost:5000/api/";
 function App() {
-    return (
-<Stack minH={"100vh"}>
-			<Navbar  />
+	const [users , setUsers] = useState([]);
+	return (
+		<Stack minH={"100vh"}>
+			<Navbar setUsers={setUsers}/>
 
 			<Container maxW={"1200px"} my={4}>
 				<Text
@@ -22,10 +23,10 @@ function App() {
 					</Text>
 					🚀
 				</Text>
-				<UserBox/>
+				<UserBox users={users} setUsers={setUsers}/>
 			</Container>
 		</Stack>
-    );
+	);
 }
 
 export default App;

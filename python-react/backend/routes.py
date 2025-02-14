@@ -13,7 +13,10 @@ def get_friends():
 def create_friends():
     try:
         print("starting to create new friend")
-        data = request.json
+        print("starting to create new friend")
+        print(request.get_json())
+        data = request.get_json()
+        print(data)
 
         # Validate required fields
         is_valid, error_message = validate_required_fields(data)
@@ -53,8 +56,8 @@ def create_friends():
         return jsonify(new_friend.to_json()), 201
     except Exception as e:
         db.session.rollback()
-        print("error:", str(e))
-        return jsonify({"error": str(e)}), 500
+        print("Internal server Error:", str(e))
+        return jsonify({"Internal server Error": str(e)}), 500
 @app.route("/api/friends/<int:id>",methods=["DELETE"])
 def delete_friend(id):
     try:
@@ -70,25 +73,35 @@ def delete_friend(id):
         db.session.rollback()
         return jsonify({"msg":"Internal server Error"})
         
-@app.route("/api/friends/<int:id>",methods=["PUT"])
+@app.route("/api/friends/<int:id>", methods=["PATCH"])
 def update_friend(id):
+    print("Hit the Update route")
     friend = Friends.query.get(id)
-    if(friend is None):
-        return jsonify({"msg":"No Such friend found"}),404
+    
+    if friend is None:
+        print("Not found the friend")
+        return jsonify({"msg": "Friend not found"}), 404
     else:
+        print("Found friend, proceeding with update")
         data = request.json
-        is_valid, error_message = validate_required_fields(data)
-        if not is_valid:
-            return jsonify({"msg": error_message}), 400
+        # Update fields only if provided
+        print("Updating friend fields")
+        friend.name = data.get("name", friend.name)
+        friend.role = data.get("role", friend.role)
+        friend.description = data.get("description", friend.description)
         
-        friend.name = data.get("name",friend.name)
-        friend.email = data.get("email",friend.email)
-        friend.gender = data.get("gender",friend.gender)
-        friend.role = data.get("role",friend.role)
-        friend.description = data.get("description",friend.description)
         db.session.commit()
-        return jsonify({"msg":"Friend Updated Successfully"})
+        print("Committed the changes")
         
+        # Refresh friend from database after commit to get updated values
+        updated_friend = Friends.query.get(id)
+        
+        # Return updated friend data in JSON format
+        return jsonify(updated_friend.to_json()), 200
+
+@app.route("/api/friends/*",methods=["GET","POST","DELETE","PATCH"])
+def error():
+    return jsonify({"msg":"Invalid Request"}),400
     
     
     

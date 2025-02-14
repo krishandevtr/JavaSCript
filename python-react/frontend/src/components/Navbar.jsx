@@ -34,7 +34,7 @@ const Navbar = ({ setUsers }) => {
 						<Button onClick={toggleColorMode}>
 							{colorMode === "light" ? <IoMoon /> : <LuSun size={20} />}
 						</Button>
-                        <UserModel />
+                        <UserModel setUsers={setUsers}/>
 					</Flex>
 				</Flex>
 			</Box>
