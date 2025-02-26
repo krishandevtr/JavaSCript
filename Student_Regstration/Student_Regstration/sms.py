@@ -3,7 +3,7 @@ import time
 import ttkthemes
 from tkinter import ttk
 from tkinter import messagebox
-import pymysql
+# import pymysql
 # Mention all function
 def clock():
     date= time.strftime('%d/%m/%Y')
